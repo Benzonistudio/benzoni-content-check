@@ -9,13 +9,13 @@ Så kan reglerne aldrig gå i hver sin retning. Ren JavaScript, ingen afhængigh
 
 ## Installation
 
-Pakken hentes direkte fra GitHub med et fast versionsmærke:
+Pakken hentes direkte fra GitHub som arkivet for et fast versionsmærke:
 
-```json
-"devDependencies": {
-  "@benzoni/content-check": "git+https://github.com/Benzonistudio/benzoni-content-check.git#v1.0.0"
-}
+```bash
+npm install --save-dev --save-exact https://github.com/Benzonistudio/benzoni-content-check/archive/refs/tags/v1.0.0.tar.gz
 ```
+
+Brug arkivet over https, ikke `github:…`. Ellers skriver npm en SSH-adresse i `package-lock.json`, og så fejler installationen på Vercel og i GitHub Actions. Låsefilen gemmer en kontrolsum af arkivet.
 
 ## Brug
 
