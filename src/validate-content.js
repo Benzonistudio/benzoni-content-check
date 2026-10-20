@@ -210,6 +210,8 @@ function checkHours(state, field, value, at) {
 }
 
 function checkImage(state, field, value, at) {
+  // Et valgfrit billede må mangle helt.
+  if (!field.required && (value === undefined || value === null || (typeof value === 'object' && isEmpty(value.src)))) return;
   if (!value || typeof value !== 'object') return report(state, at, 'Vælg et billede til {felt}.');
   const { src, alt } = value;
 

@@ -12,7 +12,7 @@ Så kan reglerne aldrig gå i hver sin retning. Ren JavaScript, ingen afhængigh
 Pakken hentes direkte fra GitHub som arkivet for et fast versionsmærke:
 
 ```bash
-npm install --save-dev --save-exact https://github.com/Benzonistudio/benzoni-content-check/archive/refs/tags/v1.2.0.tar.gz
+npm install --save-dev --save-exact https://github.com/Benzonistudio/benzoni-content-check/archive/refs/tags/v1.3.0.tar.gz
 ```
 
 Brug arkivet over https, ikke `github:…`. Ellers skriver npm en SSH-adresse i `package-lock.json`, og så fejler installationen på Vercel og i GitHub Actions. Låsefilen gemmer en kontrolsum af arkivet.
@@ -80,6 +80,7 @@ Dette repo er offentligt. Læg aldrig kundedata, nøgler eller andre hemmelighed
 
 ## Ændringer
 
+- **1.3.0:** Et billede uden `required` må mangle helt (fx et opslag uden billede).
 - **1.2.0:** Ny felttype `toggle` (slået til eller fra), fx til dele af siden, der kan skjules.
 - **1.1.0:** I oversatte tekster og alt-tekster skal kun dansk udfyldes. Mangler engelsk eller tysk, viser siden den danske tekst. Et valgfrit felt må være helt tomt, men har et andet sprog tekst, skal dansk også have det.
 - **1.0.0:** Første version.

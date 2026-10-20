@@ -151,3 +151,11 @@ test('til og fra (toggle)', () => {
   assert.deepEqual(validateContent({ schema, content: { side: { vis: false } } }), []);
   assert.match(validateContent({ schema, content: { side: { vis: 'ja' } } })[0].message, /slået til eller fra/);
 });
+
+test('valgfrit billede må mangle', () => {
+  const schema = { version: 1, languages: ['da'], files: { side: { fields: { billede: { type: 'image', label: 'Billede', image: { width: 4, height: 3 }, alt: {} } } } } };
+  assert.deepEqual(validateContent({ schema, content: { side: {} } }), []);
+  assert.deepEqual(validateContent({ schema, content: { side: { billede: null } } }), []);
+  schema.files.side.fields.billede.required = true;
+  assert.match(validateContent({ schema, content: { side: {} } })[0].message, /Vælg et billede/);
+});
