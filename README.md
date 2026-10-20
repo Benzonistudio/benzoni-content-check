@@ -12,7 +12,7 @@ Så kan reglerne aldrig gå i hver sin retning. Ren JavaScript, ingen afhængigh
 Pakken hentes direkte fra GitHub som arkivet for et fast versionsmærke:
 
 ```bash
-npm install --save-dev --save-exact https://github.com/Benzonistudio/benzoni-content-check/archive/refs/tags/v1.0.0.tar.gz
+npm install --save-dev --save-exact https://github.com/Benzonistudio/benzoni-content-check/archive/refs/tags/v1.1.0.tar.gz
 ```
 
 Brug arkivet over https, ikke `github:…`. Ellers skriver npm en SSH-adresse i `package-lock.json`, og så fejler installationen på Vercel og i GitHub Actions. Låsefilen gemmer en kontrolsum af arkivet.
@@ -61,7 +61,7 @@ Hver fejl har samme form:
 
 | Funktion | Tjekker |
 | --- | --- |
-| `validateContent` | Påkrævede felter, alle sprog, maks/min tegn, linjeskift, mønstre, formateret tekst (kun tilladte tags og sikre links), priser, datoer, perioder, åbningstider, links, telefonnumre, valg, lister, unikke id'er, ukendte felter og filer. Billeder: alt-tekst, filtype, at filen findes, højst 500 KB, samme format som pladsen (±1 %) og mindst samme størrelse. |
+| `validateContent` | Påkrævede felter, sprog (kun dansk skal udfyldes; mangler engelsk eller tysk, viser siden dansk), maks/min tegn, linjeskift, mønstre, formateret tekst (kun tilladte tags og sikre links), priser, datoer, perioder, åbningstider, links, telefonnumre, valg, lister, unikke id'er, ukendte felter og filer. Billeder: alt-tekst, filtype, at filen findes, højst 500 KB, samme format som pladsen (±1 %) og mindst samme størrelse. |
 | `checkImages` | Alle billedfiler i `public/`: filtype og højst 500 KB. |
 | `checkSite` | Den færdige side: alt-tekst på alle `<img>`, døde interne links og ankre, eksterne scripts/iframes/skrifttyper (kun via tilladt-liste) og kendte sporingstjenester (Google Analytics, Meta Pixel, Hotjar, Clarity, TikTok, LinkedIn m.fl.). Sporing må kun komme ind via cookiemodulet. |
 | `formatErrors`, `githubAnnotations`, `githubSummary` | Fejlene som tekst, som fejlmarkeringer og som opsummering i GitHub Actions. |
@@ -77,3 +77,8 @@ npm test
 En ny version udgives ved at rette `version` i `package.json`, committe og lave et mærke, fx `git tag v1.1.0 && git push --tags`. Kunderepoerne og editoren opdateres derefter hver for sig.
 
 Dette repo er offentligt. Læg aldrig kundedata, nøgler eller andre hemmeligheder her.
+
+## Ændringer
+
+- **1.1.0:** I oversatte tekster og alt-tekster skal kun dansk udfyldes. Mangler engelsk eller tysk, viser siden den danske tekst. Et valgfrit felt må være helt tomt, men har et andet sprog tekst, skal dansk også have det.
+- **1.0.0:** Første version.

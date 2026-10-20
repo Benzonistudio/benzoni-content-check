@@ -217,6 +217,8 @@ function checkImage(state, field, value, at) {
   const altAt = { ...at, translatable: Boolean(altField.translatable) };
   const altValues = altField.translatable ? at.languages.map(language => [language, alt?.[language]]) : [[null, alt]];
   for (const [language, text] of altValues) {
+    // Mangler en oversættelse, bruger siden den danske beskrivelse.
+    if (isEmpty(text) && language && language !== 'da') continue;
     if (isEmpty(text)) report(state, altAt, 'Billedet {felt} mangler en kort beskrivelse af, hvad billedet viser.', { language, detail: 'alt-tekst mangler' });
     else if (altField.maxLength && length(text) > altField.maxLength) report(state, altAt, `Beskrivelsen af billedet {felt} er for lang (${length(text)} tegn). Gør den højst ${altField.maxLength} tegn.`, { language });
   }
@@ -296,10 +298,13 @@ function checkValue(state, field, value, at) {
     for (const key of Object.keys(value)) {
       if (!at.languages.includes(key)) report(state, { ...at, editor: false }, 'Feltet {felt} har et ukendt sprog.', { detail: `ukendt sprog ${key}` });
     }
+    // Kun dansk skal udfyldes. Mangler engelsk eller tysk, viser siden den danske tekst.
+    // Er feltet valgfrit, skal dansk kun udfyldes, hvis et andet sprog har tekst.
+    const anyText = at.languages.some(language => !isEmpty(value[language]));
     for (const language of at.languages) {
       const text = value[language];
       if (isEmpty(text)) {
-        if (field.required || language === 'da') report(state, at, 'Feltet {felt} skal udfyldes.', { language });
+        if (language === 'da' && (field.required || anyText)) report(state, at, 'Feltet {felt} skal udfyldes.', { language });
         continue;
       }
       checkText(state, field, text, at, language);

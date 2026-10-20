@@ -26,9 +26,11 @@ test('fejl har sti, modtager, dansk besked og fil', () => {
 
 test('påkrævede felter og sprog', () => {
   assert.deepEqual(paths(check(c => { delete c.forside.hero.overskrift; })), ['forside.hero.overskrift']);
-  const missingEnglish = check(c => { delete c.forside.hero.overskrift.en; });
-  assert.equal(missingEnglish.length, 1);
-  assert.equal(missingEnglish[0].language, 'en');
+  assert.deepEqual(check(c => { delete c.forside.hero.overskrift.en; }), [], 'påkrævet felt må mangle engelsk: siden viser dansk');
+  const missingDanish = check(c => { delete c.forside.hero.overskrift.da; });
+  assert.equal(missingDanish.length, 1);
+  assert.equal(missingDanish[0].language, 'da');
+  assert.deepEqual(check(c => { c.forside.hero.intro = { da: '' }; }), [], 'valgfrit felt må være helt tomt');
   assert.deepEqual(check(c => { delete c.forside.hero.intro.en; }), [], 'valgfrit felt må mangle et sprog');
   assert.deepEqual(paths(check(c => { c.forside.hero.intro.da = ''; c.forside.hero.intro.en = 'x'.repeat(20); })), ['forside.hero.intro'], 'dansk skal altid findes');
   assert.match(check(c => { c.forside.hero.overskrift.fr = 'Bonjour'; })[0].detail, /ukendt sprog fr/);
@@ -108,7 +110,8 @@ test('ukendte felter og felter kun til Patrick', () => {
 
 test('billeder', () => {
   assert.match(check(c => { c.forside.hero.billede.alt.da = ' '; })[0].message, /mangler en kort beskrivelse/);
-  assert.equal(check(c => { delete c.forside.hero.billede.alt.en; })[0].language, 'en');
+  assert.deepEqual(check(c => { delete c.forside.hero.billede.alt.en; }), [], 'engelsk beskrivelse må mangle: siden viser dansk');
+  assert.equal(check(c => { c.forside.hero.billede.alt.da = ''; })[0].language, 'da');
   assert.match(check(c => { c.forside.hero.logo.alt = ''; })[0].message, /mangler en kort beskrivelse/);
   assert.match(check(c => { c.forside.hero.billede.src = '/images/findes-ikke.jpg'; })[0].message, /kan ikke findes/);
   assert.match(check(c => { c.forside.hero.billede.src = '/images/hero.gif'; })[0].message, /jpg-, png-, webp- eller avif-billede/);
@@ -131,7 +134,8 @@ test('validateField og findField', () => {
   const [error] = validateField(schema, 'menu.kategorier.0.retter.1.pris', -5);
   assert.equal(error.path, 'menu.kategorier.0.retter.1.pris');
   assert.match(error.message, /"Pris" \(Ret 2\)/);
-  assert.equal(validateField(schema, 'forside.hero.overskrift', { da: 'Hej', en: '' }).length, 1);
+  assert.equal(validateField(schema, 'forside.hero.overskrift', { da: 'Hej', en: '' }).length, 0, 'tom engelsk tekst: siden viser dansk');
+  assert.equal(validateField(schema, 'forside.hero.overskrift', { da: '', en: 'Hi' }).length, 1);
   assert.equal(validateField(schema, 'global.betaling.0', { da: 'Kort', en: 'Card' }).length, 0);
   assert.match(validateField(schema, 'forside.findes.ikke', 'x')[0].detail, /står ikke i schema.json/);
   assert.equal(findField(schema, 'menu.kategorier.x.navn'), null);
