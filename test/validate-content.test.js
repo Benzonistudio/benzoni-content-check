@@ -145,3 +145,9 @@ test('validateField og findField', () => {
 test('imageSources finder alle billeder', () => {
   assert.deepEqual(imageSources(schema, goodContent()).sort(), ['/images/hero.jpg', '/images/logo.png']);
 });
+
+test('til og fra (toggle)', () => {
+  const schema = { version: 1, languages: ['da'], files: { side: { fields: { vis: { type: 'toggle', label: 'Vis billederne' } } } } };
+  assert.deepEqual(validateContent({ schema, content: { side: { vis: false } } }), []);
+  assert.match(validateContent({ schema, content: { side: { vis: 'ja' } } })[0].message, /slået til eller fra/);
+});

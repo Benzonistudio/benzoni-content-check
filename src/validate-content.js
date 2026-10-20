@@ -332,6 +332,8 @@ function checkValue(state, field, value, at) {
       return validDate(value) ? undefined : report(state, at, 'Datoen i {felt} er ikke en rigtig dato.', { detail: `${value} skal være ÅÅÅÅ-MM-DD` });
     case 'id':
       return typeof value === 'string' && /^[a-z0-9-]+$/.test(value) ? undefined : report(state, { ...at, editor: false }, 'Feltet {felt} har et ugyldigt id.', { detail: `${value} må kun indeholde a-z, 0-9 og -` });
+    case 'toggle':
+      return typeof value === 'boolean' ? undefined : report(state, at, 'Feltet {felt} skal være slået til eller fra.', { detail: `${JSON.stringify(value)} er ikke true eller false` });
     case 'multiselect': {
       if (!Array.isArray(value)) return report(state, at, 'Feltet {felt} skal være en liste.');
       const options = Object.keys(field.options || {});
