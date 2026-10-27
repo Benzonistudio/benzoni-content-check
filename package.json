@@ -1,6 +1,6 @@
 {
   "name": "@benzoni/content-check",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Fælles regler for indholdet på Benzoni Studios kundesider. Bruges af kvalitetstjekket i kunderepoerne og af Benzoni Editor.",
   "type": "module",
   "exports": "./src/index.js",
@@ -8,7 +8,8 @@
     "src"
   ],
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "cookies:generate": "node scripts/update-cookie-runtime.mjs"
   },
   "engines": {
     "node": ">=20"

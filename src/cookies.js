@@ -1,6 +1,6 @@
 // Cookiemodulets eneste indgang. ID'er er offentlige installations-ID'er, aldrig hemmelige nøgler.
-import fs from 'node:fs';
-export const cookieRuntime = fs.readFileSync(new URL('./cookie-runtime.js', import.meta.url), 'utf8');
+import source from './cookie-runtime-source.js';
+export const cookieRuntime = source;
 export const COOKIE_FILE = 'benzoni-cookies.js';
 const keys = ['aktiv', 'loesning', 'samtykkeId', 'googleAnalyticsId', 'googleAdsId', 'metaPixelId'];
 const patterns = {

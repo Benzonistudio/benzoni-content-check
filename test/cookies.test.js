@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { defaultCookies, cookieAssets, validateCookies, privacySection, checkSite } from '../src/index.js';
+import { defaultCookies, cookieAssets, validateCookies, privacySection, checkSite, cookieRuntime } from '../src/index.js';
 import { tempDir } from './helpers.js';
 const config = (extra = {}) => ({ ...defaultCookies(), aktiv: true, samtykkeId: '11111111-1111-4111-8111-111111111111', googleAnalyticsId: 'G-TEST1234', metaPixelId: '1234567890', ...extra });
 const site = c => {
@@ -48,4 +48,8 @@ test('privatlivsteksten følger de aktiverede tjenester',()=>{
  assert.ok(!privacySection({aktiv:false}).includes('Meta Pixel'));
  const text=privacySection(config({metaPixelId:'',googleAdsId:''}));
  assert.ok(text.includes('Google Analytics'));assert.ok(!text.includes('Meta Pixel'));assert.ok(!text.includes('Google Ads bruges'));
+});
+
+test('den genererede browsertekst svarer til kilden',()=>{
+ assert.equal(cookieRuntime,fs.readFileSync(new URL('../src/cookie-runtime.js',import.meta.url),'utf8'));
 });
