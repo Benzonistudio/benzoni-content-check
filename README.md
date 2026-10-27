@@ -84,3 +84,21 @@ Dette repo er offentligt. Læg aldrig kundedata, nøgler eller andre hemmelighed
 - **1.2.0:** Ny felttype `toggle` (slået til eller fra), fx til dele af siden, der kan skjules.
 - **1.1.0:** I oversatte tekster og alt-tekster skal kun dansk udfyldes. Mangler engelsk eller tysk, viser siden den danske tekst. Et valgfrit felt må være helt tomt, men har et andet sprog tekst, skal dansk også have det.
 - **1.0.0:** Første version.
+
+
+## Valgfrit cookiemodul (1.4.0)
+
+`cookieAssets(global.cookies)` giver installations-HTML, en indstillingsknap og de browserfiler, der skal skrives til dist. `privacyPage(global, global.cookies)` giver en grundskabelon til privatlivssiden. Indsæt `head` på hver side, `settings` i footeren og skriv `files` uændret. Sæt ikke sporingsscripts ind andre steder.
+
+- `aktiv: false` eller en gammel tom opsætning giver ingen scripts eller samtykkeknap. Undlad at kopiere browserkoden til public/.
+- Ved `aktiv: true` kræves `loesning: "cookiebot"` og et gyldigt offentligt `samtykkeId`. Analytics-, Ads- og Meta-ID'er er valgfrie. Ingen fri HTML eller JavaScript i opsætningen.
+- Hele gruppen skal have `editor: false` i kundens schema.json. Bygningen, ikke kundens browser, vælger opsætningen.
+- Kør `checkSite({distDir, cookies: content.global.cookies})`. Tjekket accepterer kun præcis pakkens browserkode og opsætning. Det giver ingen generel tilladelse til eksterne scripts.
+- Google starter i basic Consent Mode v2. Ingen Google-/Meta-scripts før relevant samtykke. Tilbagetrækning stopper og genindlæser dokumentet for at fjerne de allerede indlæste tjenester. Kendte cookies, som siden kan fjerne, ryddes. Tredjepartscookies kan ikke loves slettet.
+- Ingen leverandører indlæses inde i iframes, herunder Benzoni Editor.
+
+Cookiebot-kontoens banner skal separat sættes op med lige synlig Afvis og Accepter, separate kategorier, passende dansk tekst, farver og skrifttype. Kontrollér rigtige netværkskald, cookies og deklarationen med en gyldig konto, før modulet aktiveres hos en kunde. Tests med falske leverandører beviser ikke opsætningen på kontoen.
+
+Privatlivssiden er en grundskabelon til testkundens statiske side uden kontaktformular. Den skal gennemgås og tilpasses virksomhedens faktiske behandling, hosting og opbevaringstider før brug hos en rigtig kunde.
+
+Integration: [Cookiebot API](https://www.cookiebot.com/en/developer/), [Googles Consent Mode](https://developers.google.com/tag-platform/security/concepts/consent-mode).

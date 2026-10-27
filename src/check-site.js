@@ -2,6 +2,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { cookieAssets, COOKIE_FILE, cookieRuntime, validateCookies } from './cookies.js';
 
 // Kendte sporingstjenester. De må kun komme ind via cookiemodulet (Fase 6).
 export const TRACKERS = [
@@ -38,8 +39,14 @@ function resolveTarget(distDir, fromFile, url) {
   return candidates.find(file => fs.existsSync(file) && fs.statSync(file).isFile()) || null;
 }
 
-export function checkSite({ distDir, allowedHosts = [] }) {
-  const errors = [];
+export function checkSite({ distDir, allowedHosts = [], cookies = null }) {
+  const errors = [...validateCookies(cookies)];
+  const active = cookies?.aktiv === true && !errors.length;
+  const assets = errors.length ? null : cookieAssets(cookies);
+  const runtimePath = path.join(distDir, COOKIE_FILE);
+  const validRuntime = active && fs.existsSync(runtimePath) && fs.readFileSync(runtimePath, 'utf8') === cookieRuntime;
+  if (active && !validRuntime) errors.push({ path: 'global.cookies', audience: 'patrick', file: `dist/${COOKIE_FILE}`, message: 'Cookiemodulet mangler eller er ændret. Byg siden igen med den fælles pakke.', detail: 'Browserkoden skal svare præcis til pakkens version.' });
+  if (!active && fs.existsSync(runtimePath)) errors.push({ path: 'global.cookies', audience: 'patrick', file: `dist/${COOKIE_FILE}`, message: 'Cookiemodulet er slået fra, men browserkoden ligger stadig på siden.', detail: 'Fjern gammel cookie-browserkode fra bygningen.' });
   const files = listFiles(distDir);
   const htmlFiles = files.filter(file => file.endsWith('.html'));
   const idCache = new Map();
@@ -51,6 +58,9 @@ export function checkSite({ distDir, allowedHosts = [] }) {
 
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, 'utf8');
+    if (active && !html.includes(assets.head)) push(file, 'Cookiemodulets opsætning mangler eller er ændret på en side.', 'Den genererede opsætning skal være på alle sider.');
+    const cookieNodes = [...html.matchAll(/<script\b[^>]*(?:benzoni-cookie-config|benzoni-cookies\.js)[^>]*>[\s\S]*?<\/script>/gi)];
+    if ((!active && cookieNodes.length) || (active && cookieNodes.length !== 2)) push(file, 'Cookiemodulets installation er forkert eller indsat flere gange.', 'Forvent én opsætning og ét script pr. side, kun når modulet er slået til.');
     const page = `/${path.relative(distDir, file).split(path.sep).join('/')}`;
 
     // Alt-tekster
@@ -84,6 +94,8 @@ export function checkSite({ distDir, allowedHosts = [] }) {
 
   // Sporingsscripts i HTML og JavaScript
   for (const file of files.filter(f => /\.(html|js|mjs)$/.test(f))) {
+    // Undtag kun den uændrede, versionsbundne browserkode, aldrig en hel mappe eller et domæne.
+    if (file === runtimePath && validRuntime) continue;
     const text = fs.readFileSync(file, 'utf8');
     for (const tracker of TRACKERS) {
       if (tracker.pattern.test(text)) push(file, `Siden indeholder ${tracker.name} uden om cookiemodulet. Sporing må kun tilføjes via cookiemodulet.`, `fundet i ${path.basename(file)}: ${tracker.pattern}`);

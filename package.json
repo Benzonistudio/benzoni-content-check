@@ -1,6 +1,6 @@
 {
   "name": "@benzoni/content-check",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Fælles regler for indholdet på Benzoni Studios kundesider. Bruges af kvalitetstjekket i kunderepoerne og af Benzoni Editor.",
   "type": "module",
   "exports": "./src/index.js",
