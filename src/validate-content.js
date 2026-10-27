@@ -8,6 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { imageSize } from './image-size.js';
+import { validateCookies } from './cookies.js';
 
 export const MAX_IMAGE_BYTES = 500 * 1024;
 export const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.svg'];
@@ -351,7 +352,7 @@ function checkValue(state, field, value, at) {
 // ---------- Offentlige funktioner ----------
 
 export function validateContent({ schema, content, publicDir = null }) {
-  const state = { errors: [], publicDir };
+  const state = { errors: validateCookies(content?.global?.cookies), publicDir };
   if (!schema?.files) {
     state.errors.push({ path: null, audience: 'patrick', message: 'content/schema.json mangler eller er forkert.', detail: 'schema.files mangler', file: 'content/schema.json' });
     return state.errors;
